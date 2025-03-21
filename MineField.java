@@ -3,6 +3,7 @@
 // CS 455 PA3
 // Spring 2025
 
+import java.util.Random;
 
 /** 
    MineField
@@ -14,7 +15,11 @@
 public class MineField {
    
    // <put instance variables here>
-   
+   private int rows;
+   private int columns;
+   private int mineCount;
+   private Random random;
+   private boolean[][] mineLocation;
    
    
    /**
@@ -26,7 +31,27 @@ public class MineField {
                        and must be rectangular (i.e., every row is the same length)
     */
    public MineField(boolean[][] mineData) {
-      
+
+      rows = mineData.length;
+      columns = mineData[0].length;
+      mineCount = 0;
+      random = new Random();
+
+      /**
+         creating array to store mine locations
+         mineLocation array is same size as the mineData
+       */
+      mineLocation = new boolean[rows][columns]; 
+
+      //creating defensive copy of mineData
+      for (int r = 0; r < rows; r++){
+         for (int c = 0; c < columns; c++){
+            mineLocation[r][c] = mineData[r][c];
+            if (mineLocation[r][c]){
+               mineCount++;
+            }
+         }
+      }
    }
    
    
@@ -40,7 +65,15 @@ public class MineField {
       PRE: numRows > 0 and numCols > 0 and 0 <= numMines < (1/3 of total number of field locations). 
     */
    public MineField(int numRows, int numCols, int numMines) {
+      assert (numRows > 0 && numCols > 0) && (numMines >= 0 && numMines < (numRows * numCols) / 3);
       
+      rows = numRows;
+      columns = numCols;
+      mineCount = numMines;
+      random = new Random();
+
+      //create the mine grid
+      mineLocation = new boolean[rows][columns];
    }
    
 
@@ -52,7 +85,25 @@ public class MineField {
       PRE: inRange(row, col) and numMines() < (1/3 * numRows() * numCols())
     */
    public void populateMineField(int row, int col) {
-      
+
+      assert inRange(row, col) && numMines() < (numRows() * numCols()) / 3;
+
+      resetEmpty();
+      int usedMines = 0;
+
+      while(usedMines < mineCount){
+         int r = random.nextInt(rows);
+         int c = random.nextInt(columns);
+
+         /**
+          * checks avoid placing mine at (row, col)
+          * checks if a mine was placed before at the [r][c]
+          */
+         if ((r != row || c != col) && !mineLocation[r][c]){
+            mineLocation[r][c] = true;
+            usedMines ++;
+         }
+      }
    }
    
    
@@ -64,7 +115,11 @@ public class MineField {
       beginning of a game.
     */
    public void resetEmpty() {
-      
+      for (int r = 0; r < rows; r++){
+         for (int c = 0; c < columns; c++){
+            mineLocation[r][c] = false;
+         }
+      }
    }
 
    
@@ -78,7 +133,25 @@ public class MineField {
      PRE: inRange(row, col)
    */
    public int numAdjacentMines(int row, int col) {
-      return 0;       // DUMMY CODE so skeleton compiles
+      assert inRange(row, col);
+
+      int foundMineCount = 0;
+      // traverse in 3*3 grid squares - nested loop 
+      for (int pointerRowLoc = -1; pointerRowLoc <= 1; pointerRowLoc++){
+         for (int pointerColLoc = -1; pointerColLoc <= 1; pointerColLoc++){
+            int newRowIndex = row + pointerRowLoc;
+            int newColIndex = col + pointerColLoc;
+
+            // not checking the selected square
+            if (pointerRowLoc == 0 && pointerColLoc == 0){
+               continue;
+            }
+            if (inRange(newRowIndex, newColIndex) && mineLocation[newRowIndex][newColIndex]){
+               foundMineCount++;
+            }
+         }
+      }
+      return foundMineCount;       
    }
    
    
@@ -90,7 +163,10 @@ public class MineField {
       @return whether (row, col) is a valid field location
    */
    public boolean inRange(int row, int col) {
-      return false;       // DUMMY CODE so skeleton compiles
+      if (row < 0 || row >= rows || col < 0 || col >= columns){
+         return false;       
+      }
+      return true;
    }
    
    
@@ -99,7 +175,7 @@ public class MineField {
       @return number of rows in the field
    */  
    public int numRows() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return rows;       
    }
    
    
@@ -108,7 +184,7 @@ public class MineField {
       @return number of columns in the field
    */    
    public int numCols() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return columns;       
    }
    
    
@@ -120,7 +196,11 @@ public class MineField {
       PRE: inRange(row, col)   
    */    
    public boolean hasMine(int row, int col) {
-      return false;       // DUMMY CODE so skeleton compiles
+
+      assert inRange(row, col);
+      
+      return mineLocation[row][col];
+      
    }
    
    
@@ -132,12 +212,32 @@ public class MineField {
       @return number of mines
     */
    public int numMines() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return mineCount;       
    }
 
+   @Override
+   public String toString(){
+      String result = "Number of Rows: " + rows + "\n";
+      result += "Number of Columns: " + columns + "\n";
+      result += "Number of Mines: " + mineCount + "\n";
+      result += "Mine Locations: \n";
+
+      for (int r = 0; r < rows; r++){
+         for (int c = 0; c< columns; c++){
+            if (mineLocation[r][c]){
+               result += "Mine ";
+            }
+            else{
+               result += "- ";
+            }
+         }
+         result += "\n";
+      }
+      return result;
+   }
    
    // <put private methods here>
-   
+
          
 }
 
