@@ -225,13 +225,13 @@ public class MineField {
       for (int r = 0; r < rows; r++){
          for (int c = 0; c< columns; c++){
             if (mineLocation[r][c]){
-               result += "Mine";
+               result += "Mine ";
             }
             else{
-               result += "--"
+               result += "- ";
             }
-            result += "\n";
          }
+         result += "\n";
       }
       return result;
    }
