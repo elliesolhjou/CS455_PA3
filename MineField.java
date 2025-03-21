@@ -3,6 +3,7 @@
 // CS 455 PA3
 // Spring 2025
 
+import java.util.Random;
 
 /** 
    MineField
@@ -14,7 +15,11 @@
 public class MineField {
    
    // <put instance variables here>
-   
+   private int rows;
+   private int columns;
+   private int mineCount;
+   private Random random;
+   private Boolean[][] mineLocation;
    
    
    /**
@@ -26,7 +31,27 @@ public class MineField {
                        and must be rectangular (i.e., every row is the same length)
     */
    public MineField(boolean[][] mineData) {
-      
+      assert rows >=1;
+      assert columns >=1;
+
+      rows = mineData.length;
+      columns = mineData[0].length;
+      mineCount = 0;
+      random = new Random();
+
+      //creating array to store mine locations
+      // mine location array same size as the mineData
+      mineLocation = new Boolean[rows][columns];
+
+      //creating defensive copy of mineData
+      for (int r = 0; r < rows; r++){
+         for (int c = 0; c < columns; c++){
+            mineLocation[r][c] = mineData[r][c];
+            if (mineLocation[r][c]){
+               mineCount++;
+            }
+         }
+      }
    }
    
    
@@ -40,7 +65,10 @@ public class MineField {
       PRE: numRows > 0 and numCols > 0 and 0 <= numMines < (1/3 of total number of field locations). 
     */
    public MineField(int numRows, int numCols, int numMines) {
-      
+      rows = numRows;
+      columns = numCols;
+      mineCount = numMines;
+
    }
    
 
@@ -120,7 +148,10 @@ public class MineField {
       PRE: inRange(row, col)   
    */    
    public boolean hasMine(int row, int col) {
-      return false;       // DUMMY CODE so skeleton compiles
+      assert inRange(row, col);
+
+      return mineLocation[row][col];
+      
    }
    
    
