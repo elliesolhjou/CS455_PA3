@@ -39,9 +39,11 @@ public class MineField {
       mineCount = 0;
       random = new Random();
 
-      //creating array to store mine locations
-      // mine location array same size as the mineData
-      mineLocation = new Boolean[rows][columns];
+      /**
+         creating array to store mine locations
+         mineLocation array is same size as the mineData
+       */
+      mineLocation = new Boolean[rows][columns]; 
 
       //creating defensive copy of mineData
       for (int r = 0; r < rows; r++){
@@ -65,9 +67,16 @@ public class MineField {
       PRE: numRows > 0 and numCols > 0 and 0 <= numMines < (1/3 of total number of field locations). 
     */
    public MineField(int numRows, int numCols, int numMines) {
+      assert (numRows > 0 && numCols > 0) && (numMines >= 0 && numMines < (numRows * numCols) / 3);
       rows = numRows;
       columns = numCols;
       mineCount = numMines;
+      random = new Random();
+
+      //create the grid
+      mineLocation = new boolean[rows][columns];
+
+
 
    }
    
@@ -81,6 +90,15 @@ public class MineField {
     */
    public void populateMineField(int row, int col) {
       
+      int[] randMine = randomProducer;
+      boolean allMinesUsed = false;
+      while(!allMinesUsed){
+         mineLocation[randMine[0]][randMine[1]] = true;
+         mineCount--;
+         if (mineCount == 0){
+            allMinesUsed = true;
+         }
+      }
    }
    
    
@@ -168,7 +186,14 @@ public class MineField {
 
    
    // <put private methods here>
-   
+   private static int[] randomProducer(){
+      int[] randSquareLocation = [0,0];
+      int randRow = Math.Random(0,rows+1);
+      int randCol = Math.random(o, columns+1);
+      randSquareLocation[0] = randRow;
+      randSquareLocation[1] = randCol;
+      return randSquareLocation;
+   }
          
 }
 
