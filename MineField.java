@@ -19,7 +19,7 @@ public class MineField {
    private int columns;
    private int mineCount;
    private Random random;
-   private Boolean[][] mineLocation;
+   private boolean[][] mineLocation;
    
    
    /**
@@ -31,8 +31,6 @@ public class MineField {
                        and must be rectangular (i.e., every row is the same length)
     */
    public MineField(boolean[][] mineData) {
-      assert rows >=1;
-      assert columns >=1;
 
       rows = mineData.length;
       columns = mineData[0].length;
@@ -43,7 +41,7 @@ public class MineField {
          creating array to store mine locations
          mineLocation array is same size as the mineData
        */
-      mineLocation = new Boolean[rows][columns]; 
+      mineLocation = new boolean[rows][columns]; 
 
       //creating defensive copy of mineData
       for (int r = 0; r < rows; r++){
@@ -94,8 +92,8 @@ public class MineField {
       int usedMines = 0;
 
       while(usedMines < mineCount){
-         int r = random.nextInt(row);
-         int c = random.nextInt(col);
+         int r = random.nextInt(rows);
+         int c = random.nextInt(columns);
 
          /**
           * checks avoid placing mine at (row, col)
@@ -135,7 +133,25 @@ public class MineField {
      PRE: inRange(row, col)
    */
    public int numAdjacentMines(int row, int col) {
-      return 0;       // DUMMY CODE so skeleton compiles
+      assert inRange(row, col);
+
+      int foundMineCount = 0;
+      // traverse in 3*3 grid squares - nested loop 
+      for (int pointerRowLoc = -1; pointerRowLoc <= 1; pointerRowLoc++){
+         for (int pointerColLoc = -1; pointerColLoc <= 1; pointerColLoc++){
+            int newRowIndex = row + pointerRowLoc;
+            int newColIndex = col + pointerColLoc;
+
+            // not checking the selected square
+            if (pointerRowLoc == 0 && pointerColLoc == 0){
+               continue;
+            }
+            if (inRange(newRowIndex, newColIndex) && mineLocation[newRowIndex][newColIndex]){
+               foundMineCount++;
+            }
+         }
+      }
+      return foundMineCount;       
    }
    
    
@@ -147,7 +163,10 @@ public class MineField {
       @return whether (row, col) is a valid field location
    */
    public boolean inRange(int row, int col) {
-      return false;       // DUMMY CODE so skeleton compiles
+      if (row < 0 || row >= rows || col < 0 || col >= columns){
+         return false;       
+      }
+      return true;
    }
    
    
@@ -177,8 +196,9 @@ public class MineField {
       PRE: inRange(row, col)   
    */    
    public boolean hasMine(int row, int col) {
-      
 
+      assert inRange(row, col);
+      
       return mineLocation[row][col];
       
    }
@@ -195,16 +215,26 @@ public class MineField {
       return mineCount;       
    }
 
+   @override
+   public String toString(MineField m){
+      String result = "Number of Rows: " + rows + "\n";
+      result+ = "Number of Columns: " + columns + "\n";
+      result+ = "Number of Mines: " + mineCount + "\n";
+      result+ = "Mine Locations: \n";
+
+      for (int r = 0; r < rows; r++){
+         for (int c = 0; c< columns; c++){
+            if (mineLocation[r][c]){
+               result+ = "M";
+            }
+            result+ = "--"
+         }
+      }
+      return result;
+   }
    
    // <put private methods here>
-   private static int[] randomProducer(){
-      int[] randSquareLocation = new int[2];
-      int randRow = Math.Random(0,rows);
-      int randCol = Math.random(0, columns);
-      randSquareLocation[0] = randRow;
-      randSquareLocation[1] = randCol;
-      return randSquareLocation;
-   }
+
          
 }
 
