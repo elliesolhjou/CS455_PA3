@@ -43,7 +43,7 @@ public class VisibleField {
   
    // <put instance variables here>
    private MineField mineField;
-   private int[][] visibleFiled;
+   private int[][] visibleField;
    private boolean isGameOver;
    private int rows;
    private int cols;
@@ -66,7 +66,7 @@ public class VisibleField {
       visibleField = new int[rows][cols];
       for (int r = 0; r < rows; r++){
          for (int c = 0; c < cols; c++){
-            visibleFiled[r][c] = COVERED;
+            visibleField[r][c] = COVERED;
          }
       }
       isGameOver = false;
@@ -84,7 +84,7 @@ public class VisibleField {
       visibleField = new int[rows][cols];
       for (int r = 0; r < rows; r++){
          for (int c = 0; c < cols; c++){
-            visibleFiled[r][c] = COVERED;
+            visibleField[r][c] = COVERED;
          }
       }
       isGameOver = false;
