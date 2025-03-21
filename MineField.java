@@ -68,16 +68,14 @@ public class MineField {
     */
    public MineField(int numRows, int numCols, int numMines) {
       assert (numRows > 0 && numCols > 0) && (numMines >= 0 && numMines < (numRows * numCols) / 3);
+      
       rows = numRows;
       columns = numCols;
       mineCount = numMines;
       random = new Random();
 
-      //create the grid
+      //create the mine grid
       mineLocation = new boolean[rows][columns];
-
-
-
    }
    
 
@@ -89,14 +87,23 @@ public class MineField {
       PRE: inRange(row, col) and numMines() < (1/3 * numRows() * numCols())
     */
    public void populateMineField(int row, int col) {
-      
-      int[] randMine = randomProducer;
-      boolean allMinesUsed = false;
-      while(!allMinesUsed){
-         mineLocation[randMine[0]][randMine[1]] = true;
-         mineCount--;
-         if (mineCount == 0){
-            allMinesUsed = true;
+
+      assert inRange(row, col) && numMines() < (numRows() * numCols()) / 3;
+
+      resetEmpty();
+      int usedMines = 0;
+
+      while(usedMines < mineCount){
+         int r = random.nextInt(row);
+         int c = random.nextInt(col);
+
+         /**
+          * checks avoid placing mine at (row, col)
+          * checks if a mine was placed before at the [r][c]
+          */
+         if ((r != row || c != col) && !mineLocation[r][c]){
+            mineLocation[r][c] = true;
+            usedMines ++;
          }
       }
    }
@@ -110,7 +117,11 @@ public class MineField {
       beginning of a game.
     */
    public void resetEmpty() {
-      
+      for (int r = 0; r < rows; r++){
+         for (int c = 0; c < columns; c++){
+            mineLocation[r][c] = false;
+         }
+      }
    }
 
    
@@ -145,7 +156,7 @@ public class MineField {
       @return number of rows in the field
    */  
    public int numRows() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return rows;       
    }
    
    
@@ -154,7 +165,7 @@ public class MineField {
       @return number of columns in the field
    */    
    public int numCols() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return columns;       
    }
    
    
@@ -166,7 +177,7 @@ public class MineField {
       PRE: inRange(row, col)   
    */    
    public boolean hasMine(int row, int col) {
-      assert inRange(row, col);
+      
 
       return mineLocation[row][col];
       
@@ -181,15 +192,15 @@ public class MineField {
       @return number of mines
     */
    public int numMines() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return mineCount;       
    }
 
    
    // <put private methods here>
    private static int[] randomProducer(){
-      int[] randSquareLocation = [0,0];
-      int randRow = Math.Random(0,rows+1);
-      int randCol = Math.random(o, columns+1);
+      int[] randSquareLocation = new int[2];
+      int randRow = Math.Random(0,rows);
+      int randCol = Math.random(0, columns);
       randSquareLocation[0] = randRow;
       randSquareLocation[1] = randCol;
       return randSquareLocation;
