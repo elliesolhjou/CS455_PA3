@@ -215,19 +215,22 @@ public class MineField {
       return mineCount;       
    }
 
-   @override
-   public String toString(MineField m){
+   @Override
+   public String toString(){
       String result = "Number of Rows: " + rows + "\n";
-      result+ = "Number of Columns: " + columns + "\n";
-      result+ = "Number of Mines: " + mineCount + "\n";
-      result+ = "Mine Locations: \n";
+      result += "Number of Columns: " + columns + "\n";
+      result += "Number of Mines: " + mineCount + "\n";
+      result += "Mine Locations: \n";
 
       for (int r = 0; r < rows; r++){
          for (int c = 0; c< columns; c++){
             if (mineLocation[r][c]){
-               result+ = "M";
+               result += "Mine";
             }
-            result+ = "--"
+            else{
+               result += "--"
+            }
+            result += "\n";
          }
       }
       return result;
