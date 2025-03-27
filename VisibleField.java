@@ -1,5 +1,5 @@
-// Name:
-// USC NetID:
+// Name:Fatemeh Solhjou Khah
+// USC NetID: Solhjouk
 // CS 455 PA3
 // Spring 2025
 
@@ -59,16 +59,19 @@ public class VisibleField {
       @param mineField  the minefield to use for for this VisibleField
     */
    public VisibleField(MineField mineField) {
+      
       this.mineField = mineField;
       rows = mineField.numRows();
       cols = mineField.numCols();
       totalMines = mineField.numMines();
       visibleField = new int[rows][cols];
+      
       for (int r = 0; r < rows; r++){
          for (int c = 0; c < cols; c++){
             visibleField[r][c] = COVERED;
          }
       }
+      
       isGameOver = false;
       numUncovered = 0;
    }
@@ -98,6 +101,7 @@ public class VisibleField {
       @return the minefield
     */
    public MineField getMineField() {
+      
       return mineField;      
    }
    
@@ -127,7 +131,9 @@ public class VisibleField {
       @return the number of mines left to guess.
     */
    public int numMinesLeft() {
+      
       int guessCount = 0;
+      
       for (int r = 0; r < rows; r++){
          for (int c = 0; c < cols; c++){
             if (visibleField[r][c] == MINE_GUESS){
@@ -149,15 +155,16 @@ public class VisibleField {
       PRE: getMineField().inRange(row, col)
     */
    public void cycleGuess(int row, int col) {
+      
       assert getMineField().inRange(row, col);
-
+      
       int current = visibleField[row][col];
 
       if (current == COVERED) {
-         visibleField[row][col] = MINE_GUESS;
-      } else if (current == MINE_GUESS) {
-         visibleField[row][col] = QUESTION;
-      } else if (current == QUESTION) {
+         visibleField[row][col] = MINE_GUESS;         
+      } else if (current == MINE_GUESS) {         
+         visibleField[row][col] = QUESTION;         
+      } else if (current == QUESTION) {         
          visibleField[row][col] = COVERED;
       }
    }
@@ -178,36 +185,46 @@ public class VisibleField {
       PRE: getMineField().inRange(row, col)
     */
    public boolean uncover(int row, int col) {
+      
       assert getMineField().inRange(row, col);
+      
+      /**
+         doesn't uncover square:
+         when game is over - not uncovering after,
+         when a square flagged as guessed mine - doesn't uncover yellow cells,
+      */
+      if (isGameOver || visibleField[row][col] == MINE_GUESS){
 
-      if (isGameOver || visibleField[row][col] != COVERED) {
-         return true; // already uncovered or guessed → ignore
+         return true; 
       }
-
-      if (mineField.hasMine(row, col)) {
-         visibleField[row][col] = EXPLODED_MINE;
+      
+      // change state of clicked mine square when explodes
+      if (mineField.hasMine(row, col)) {         
+         visibleField[row][col] = EXPLODED_MINE;         
          isGameOver = true;
 
-         // Reveal all mines and mark incorrect guesses
-         for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+         // change state of rest of squares after explosion 
+         for (int r = 0; r < rows; r++) {            
+            for (int c = 0; c < cols; c++) { 
+               //change square state where there is a mine 
                if (mineField.hasMine(r, c)) {
-                  if (visibleField[r][c] == COVERED) {
+                  if (visibleField[r][c] == COVERED || visibleField[r][c] == QUESTION) {                     
                      visibleField[r][c] = MINE;
                   }
-               } else if (visibleField[r][c] == MINE_GUESS) {
+                 // if there is no mine on mineField at (r,c) but it is marked as guessed mine square 
+               } else if (visibleField[r][c] == MINE_GUESS) {                  
                   visibleField[r][c] = INCORRECT_GUESS;
                }
             }
          }
 
-         return false; // player clicked a mine
+         return false; 
       }
 
-      // Safe square — uncover recursively
+      // uncover recursively to open up region
       recursiveUncover(row, col);
 
-      // Check for win condition
+      // check the winning condition
       if (numUncovered == (rows * cols - totalMines)) {
          isGameOver = true;
       }
@@ -235,28 +252,38 @@ public class VisibleField {
       PRE: getMineField().inRange(row, col)
     */
    public boolean isUncovered(int row, int col) {
+      
       assert getMineField().inRange(row, col);
+      
       return visibleField[row][col] >= 0;
    }
    
  
    // <put private methods here>
    private void recursiveUncover(int row, int col) {
-      // base case
-      if (!mineField.inRange(row, col)) return;
-      if (visibleField[row][col] != COVERED) return;
-      if (visibleField[row][col] == MINE_GUESS) return;
+      
+      // cases to stop recursion
+      if (!mineField.inRange(row, col)) return; // stops when it is out of bound squares
+      if (visibleField[row][col] == MINE_GUESS) return; // stops when square is marked as gussed mine
+      if (visibleField[row][col] >= 0) return; // stops when it has uncovered states or mine 
 
+      // ranges between 0 to 8
       int adjacent = mineField.numAdjacentMines(row, col);
+      
+      //uncovering visible field cell which shows number of adjacent mines [0-8]
       visibleField[row][col] = adjacent;
+      
       numUncovered++;
-
-      if (adjacent > 0) return; // stop expanding if not empty
+      
+      // stop growing at adjacent square to mine(s) 
+      if (adjacent > 0) return; 
 
       // recurse on all 8 neighbors
       for (int dr = -1; dr <= 1; dr++) {
-         for (int dc = -1; dc <= 1; dc++) {
-            if (dr == 0 && dc == 0) continue; // skip self
+         for (int dc = -1; dc <= 1; dc++) {    
+            
+            if (dr == 0 && dc == 0) continue; // skip the field itself   
+            
             recursiveUncover(row + dr, col + dc);
          }
       }

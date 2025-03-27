@@ -1,5 +1,5 @@
-// Name:
-// USC NetID:
+// Name:Fatemeh Solhjou Khah
+// USC NetID: Solhjouk
 // CS 455 PA3
 // Spring 2025
 
@@ -43,7 +43,7 @@ public class MineField {
        */
       mineLocation = new boolean[rows][columns]; 
 
-      //creating defensive copy of mineData
+      //creating a copy of mineData
       for (int r = 0; r < rows; r++){
          for (int c = 0; c < columns; c++){
             mineLocation[r][c] = mineData[r][c];
@@ -65,6 +65,7 @@ public class MineField {
       PRE: numRows > 0 and numCols > 0 and 0 <= numMines < (1/3 of total number of field locations). 
     */
    public MineField(int numRows, int numCols, int numMines) {
+      
       assert (numRows > 0 && numCols > 0) && (numMines >= 0 && numMines < (numRows * numCols) / 3);
       
       rows = numRows;
@@ -72,7 +73,7 @@ public class MineField {
       mineCount = numMines;
       random = new Random();
 
-      //create the mine grid
+      //create the empty mine grid
       mineLocation = new boolean[rows][columns];
    }
    
@@ -142,7 +143,7 @@ public class MineField {
             int newRowIndex = row + pointerRowLoc;
             int newColIndex = col + pointerColLoc;
 
-            // not checking the selected square
+            // skipping the selected square
             if (pointerRowLoc == 0 && pointerColLoc == 0){
                continue;
             }
