@@ -260,13 +260,31 @@ public class VisibleField {
    
  
    // <put private methods here>
+   
+   /**
+   Recursively uncovers the region of safe (non-mine and non-adjacent-to-mine) squares 
+   starting from the given square. This method is used by uncover(row, col) to implement
+   the behavior of automatically uncovering large safe areas, similar to how Minesweeper 
+   uncovers blank regions.
+
+   Stops recursion if:
+   - The location is out of bounds
+   - The square is flagged as a mine guess
+   - The square has already been uncovered
+
+   Uncovers all reachable squares with 0 adjacent mines, and stops recursion at squares 
+   with one or more adjacent mines.
+
+   @param row the row index of the square to uncover
+   @param col the column index of the square to uncover
+ */
    private void recursiveUncover(int row, int col) {
       
       // cases to stop recursion
-      if (!mineField.inRange(row, col)) return; // stops when it is out of bound squares
-      if (visibleField[row][col] == MINE_GUESS) return; // stops when square is marked as gussed mine
-      if (visibleField[row][col] >= 0) return; // stops when it has uncovered states or mine 
-
+      if (!mineField.inRange(row, col)) return; 
+      if (visibleField[row][col] == MINE_GUESS) return; 
+      if (!isCoveredState(visibleField[row][col])) return; 
+      
       // ranges between 0 to 8
       int adjacent = mineField.numAdjacentMines(row, col);
       
@@ -289,4 +307,17 @@ public class VisibleField {
       }
    }
    
+   
+   /**
+   Returns whether the square is still in a covered state.
+   Covered states include COVERED, MINE_GUESS, and QUESTION.
+   This helper is used to determine if a square has not yet been uncovered.
+   
+   @param status the visible field status value of the square
+   @return true if the square is in a covered state, false otherwise
+ */   
+   private boolean isCoveredState(int status){
+      
+      return status == COVERED || status == MINE_GUESS || status == QUESTION;
+   }
 }
